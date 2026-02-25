@@ -26,7 +26,7 @@ Whether you want to fully automate sentence generation using AI or manually writ
 
 1. Clone this repository:
    ```bash
-   git clone [https://github.com/yourusername/FlashcardTTS.git](https://github.com/yourusername/FlashcardTTS.git)
+   git clone https://github.com/tom2208/VocabAudioAutomator.git
    cd VocabAudioAutomator
 
 2. Install the dependencies using Poetry:
