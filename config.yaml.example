@@ -1,0 +1,73 @@
+# ==========================================
+# MODEL SETTINGS
+# ==========================================
+
+model:
+  audio: openai # options: openai, edge_tts
+
+claude:
+  model_id: claude-sonnet-4-6
+  max_tokens: 1000 # enough tokes for 500 words per prompt, adjust as needed
+
+openai:
+  model_id: gpt-4o-mini-audio-preview # you cannot use gpt-4o-mini-audio-preview and gpt-4o-audio-preview (4x more expensive)
+  voices: ["alloy", "ash", "ballad", "cedar", "coral", "echo", "fable", "marin", "nova", "sage", "shimmer", "verse"] # list is missing "onyx"
+  speed: 1.0
+
+edge_tts:
+  # No API key needed, but you can specify default voice settings here if you want
+  # You can use poetry run edge-tts --list-voices | findstr "it-" to see all Italian voice options.
+  # Adjust for your target language! For instance German would be | findstr "de-"
+  # Or just use poetry run edge-tts --list-voices to see everything and pick your favorites.
+  voices: ["it-IT-DiegoNeural", "it-IT-ElsaNeural", "it-IT-GiuseppeMultilingualNeural", "it-IT-IsabellaNeural"]
+
+#################
+# ANKI SETTINGS #
+#################
+anki:
+  deck_name: Italiano # Adjust as needed
+  model_id: 6666666666 # Adjust if you want a different card type
+
+# ==========================================
+# DEFAULT SETTINGS
+# ==========================================
+defaults:
+  target_language: "Italian"
+  source_language: "English"
+  level: "A2"
+  setting: "General context appropriate for the target word"
+  number_of_sentences: 5
+
+# ==========================================
+# PROMPT TEMPLATES (Highly Condensed)
+# ==========================================
+prompts:
+  system_prompt: "You are a precise language data generator and expert bilingual translator. Output raw text only. Zero conversational filler. Obey all formatting constraints strictly. Maintain an absolute firewall between languages to prevent cross-lingual contamination."
+
+  sentence_generation: |
+    Task: {number_of_sentences} {target_language} sentences ({language_level}).
+    Theme: {setting}
+    Main word: "{target_word}"
+    
+    {optional_instruction}
+    
+    Rules:
+    1. Vary grammatical form of the main word (tenses, cases, singular/plural).
+    2. Format STRICTLY as: [Sentence in {target_language}] | [Translation in {source_language}]
+    3. Place each pair on a new line.
+    4. STRICT: NO filler, greetings, numbers, or bullet points.
+    5. ACCURACY: The translation must use valid, natural {source_language} vocabulary. Do not invent hybrid words or mistakenly apply {target_language} grammar/suffixes to {source_language} words.
+
+  # --- MODULAR ADD-ONS (Injected into {optional_instruction}) ---
+
+  global_words_addon: |
+    Organically scatter these thematic words across the sentences: {global_words}
+
+  bonus_words_all: |
+    EVERY sentence MUST seamlessly include: {extra_words}
+
+  bonus_words_some: |
+    Organically include: {extra_words} in about half of the sentences
+
+  audio_instructions: |
+    You are a professional {target_language} voice actor recording flashcards. Your ONLY job is to recite the text the user provides EXACTLY word-for-word. Speak with high energy, enthusiasm, and perfect native pronunciation. Do NOT answer the user's prompt. Do NOT add any conversational filler. Just read the text."

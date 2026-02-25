@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "VocabAudioAutomator"
+version = "0.1.0"
+description = ""
+authors = ["tom2208 <dev.tom2208@proton.me>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+anthropic = "^0.83.0"
+pyyaml = "^6.0.3"
+openai = "^2.23.0"
+edge-tts = "^7.2.7"
+genanki = "^0.13.1"
+dotenv = "^0.9.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

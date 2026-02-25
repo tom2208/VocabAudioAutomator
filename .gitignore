@@ -1,0 +1,43 @@
+# =========================
+# Security & Secrets
+# =========================
+.env
+
+# =========================
+# Python & Poetry
+# =========================
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Compiled byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Project-Specific Output
+# =========================
+# Anki deck files (These get large and change often)
+*.apkg
+
+# Generated audio files (Optional: uncomment if you don't want to upload MP3s)
+# *.mp3
+# *.wav
+
+# Ignore the output folder if you have one
+output/
+
+# =========================
+# OS & Editor Files
+# =========================
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VS Code / PyCharm settings
+.vscode/
+.idea/
