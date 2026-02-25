@@ -4,6 +4,20 @@ VocabAudioAutomator is a modular Python pipeline that automates the creation of 
 
 Whether you want to fully automate sentence generation using AI or manually write your own sentences and just generate the text-to-speech (TTS) audio, this tool adapts to your workflow and budget.
 
+- [VocabAudioAutomator](#vocabaudioautomator)
+  - [✨ Features](#-features)
+  - [⚙️ Prerequisites](#️-prerequisites)
+  - [🚀 Setup \& Installation](#-setup--installation)
+  - [🛠️ How to Use (The Pipeline)](#️-how-to-use-the-pipeline)
+    - [Option A: The Full Automated Pipeline](#option-a-the-full-automated-pipeline)
+    - [Option B: The Free Route (Manual Sentences + Edge TTS)](#option-b-the-free-route-manual-sentences--edge-tts)
+  - [💸 Real-World Costs \& My Experience](#-real-world-costs--my-experience)
+    - [The "Smart \& Thrifty" Route (My Personal Choice)](#the-smart--thrifty-route-my-personal-choice)
+    - [The "Quality" Route (Adding OpenAI TTS)](#the-quality-route-adding-openai-tts)
+  - [💡 Troubleshooting \& Best Practices](#-troubleshooting--best-practices)
+  - [⚖️ Legal \& Usage Disclaimer](#️-legal--usage-disclaimer)
+  - [📄 License](#-license)
+
 ## ✨ Features
 
 * **AI Sentence Generation:** Feed the script a CSV list of vocabulary words, and it uses the Anthropic Claude API to generate natural, context-rich sentences with both source and target language translations. *(Note: Other LLMs coming soon).*
@@ -17,6 +31,7 @@ Whether you want to fully automate sentence generation using AI or manually writ
 ## ⚙️ Prerequisites
 
 * Python 3.12+
+* Poetry installed
 * Anki installed on your machine
 * **Optional API Keys:**
   * [Anthropic API Key](https://console.anthropic.com/) (If using Claude for sentence generation)
