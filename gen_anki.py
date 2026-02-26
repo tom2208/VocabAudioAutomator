@@ -60,6 +60,13 @@ my_model = genanki.Model(
             "afmt": '{{FrontSide}}<hr id="answer">{{Back}}',
         },
     ],
+    css=""".card {
+    font-family: arial;
+    font-size: 20px;
+    text-align: center;
+    color: black;
+    background-color: white;}
+    """,
 )
 
 my_deck = genanki.Deck(random.randrange(1 << 30, 1 << 31), deck_name)
@@ -76,6 +83,7 @@ for item in audio_files_created:
     my_note = genanki.Note(
         model=my_model,
         fields=[front_text, back_text, f"[sound:{audio_filename}]"],
+        guid=genanki.guid_for(front_text),
     )
     my_deck.add_note(my_note)
 

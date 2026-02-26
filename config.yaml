@@ -10,7 +10,7 @@ claude:
   max_tokens: 1000 # enough tokes for 500 words per prompt, adjust as needed
 
 openai:
-  model_id: gpt-4o-mini-audio-preview # you cannot use gpt-4o-mini-audio-preview and gpt-4o-audio-preview (4x more expensive)
+  model_id: gpt-4o-audio-preview # you cannot use gpt-4o-mini-audio-preview and gpt-4o-audio-preview (4x more expensive)
   voices: ["alloy", "ash", "ballad", "cedar", "coral", "echo", "fable", "marin", "nova", "sage", "shimmer", "verse"] # list is missing "onyx"
   speed: 1.0
 
