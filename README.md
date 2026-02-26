@@ -20,7 +20,7 @@ Whether you want to fully automate sentence generation using AI or manually writ
 
 ## ✨ Features
 
-* **AI Sentence Generation:** Feed the script a CSV list of vocabulary words, and it uses the Anthropic Claude API to generate natural, context-rich sentences with both source and target language translations. *(Note: Other LLMs coming soon).*
+* **AI Sentence Generation:** Feed the script a CSV list of vocabulary words, and it uses the Anthropic Claude API (or OpenAI's GPT's) to generate natural, context-rich sentences with both source and target language translations. *(Note: Other LLMs coming soon).*
 * **High-Quality Audio (TTS):** Generate native-sounding audio for your cards using either:
   * **Microsoft Edge TTS:** Free (for personal use).
   * **OpenAI (gpt-4o / gpt-4o-mini):** Quality AI voices (Requires API key).
