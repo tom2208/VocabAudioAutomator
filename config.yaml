@@ -4,15 +4,20 @@
 
 model:
   audio: openai # options: openai, edge_tts
+  sentence_generation: openai # options: claude, openai
 
 claude:
   model_id: claude-sonnet-4-6
   max_tokens: 1000 # enough tokes for 500 words per prompt, adjust as needed
 
 openai:
-  model_id: gpt-4o-audio-preview # you cannot use gpt-4o-mini-audio-preview and gpt-4o-audio-preview (4x more expensive)
-  voices: ["alloy", "ash", "ballad", "cedar", "coral", "echo", "fable", "marin", "nova", "sage", "shimmer", "verse"] # list is missing "onyx"
-  speed: 1.0
+  sentence_generation:
+    model_id: gpt-4o-mini
+    max_tokens: 1000 # enough tokes for 500 words per prompt, adjust as needed
+  audio:
+    model_id: gpt-4o-audio-preview # you cannot use gpt-4o-mini-audio-preview and gpt-4o-audio-preview (4x more expensive)
+    voices: ["alloy", "ash", "ballad", "cedar", "coral", "echo", "fable", "marin", "nova", "sage", "shimmer", "verse"] # list is missing "onyx"
+    speed: 1.0
 
 edge_tts:
   # No API key needed, but you can specify default voice settings here if you want

@@ -30,10 +30,10 @@ def load_config(config_path="config.yaml"):
 config = load_config()
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
-model_id = config["openai"]["model_id"]
-chatgpt_mini_voices = config["openai"]["voices"]
+model_id = config["openai"]["audio"]["model_id"]
+chatgpt_mini_voices = config["openai"]["audio"]["voices"]
 edge_tts_voices = config["edge_tts"]["voices"]
-speed = config["openai"]["speed"]
+speed = config["openai"]["audio"]["speed"]
 target_language = config["defaults"]["target_language"]
 audio_instructions = config["prompts"]["audio_instructions"]
 audio_model = config["model"]["audio"]
