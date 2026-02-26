@@ -93,8 +93,7 @@ print(f"Generating audio for {len(results)} sentences using model '{audio_model}
 
 for target, source in results:
     file_name = gen_unique_filename(base_name=target_language.replace(" ", "_"))
-    unique_filename = gen_unique_filename(file_name)
-    file_path = os.path.join(audio_folder, unique_filename)
+    file_path = os.path.join(audio_folder, file_name)
     print(
         f"({len(look_up_list)+1}/{len(results)}) Generating audio for: '{target}' with filename: '{file_name}'"
     )

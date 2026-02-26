@@ -23,11 +23,13 @@ __pycache__/
 *.apkg
 
 # Generated audio files (Optional: uncomment if you don't want to upload MP3s)
-# *.mp3
-# *.wav
+*.mp3
+*.wav
+*.txt
 
 # Ignore the output folder if you have one
 output/
+output/audio/
 
 # =========================
 # OS & Editor Files

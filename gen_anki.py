@@ -2,6 +2,7 @@ import yaml
 import sys
 import genanki
 import random
+import os
 
 #######################################
 # Load configuration from config.yaml #
@@ -70,14 +71,18 @@ for item in audio_files_created:
     back_text = item["back"]
     audio_path = item["audio_file"]
 
-    audio_filename = audio_path.split("/")[-1]
+    audio_filename = os.path.basename(audio_path)
 
     my_note = genanki.Note(
         model=my_model,
         fields=[front_text, back_text, f"[sound:{audio_filename}]"],
     )
     my_deck.add_note(my_note)
-    media_files_to_export.append(audio_path)
+
+    if os.path.exists(audio_path):
+        media_files_to_export.append(audio_path)
+    else:
+        print(f"Warning: File not found: {audio_path}")
 
 print(f"Added {len(media_files_to_export)} notes to the deck.")
 
