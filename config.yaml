@@ -3,7 +3,7 @@
 # ==========================================
 
 model:
-  audio: openai # options: openai, edge_tts
+  audio: edge_tts # options: openai, edge_tts
   sentence_generation: openai # options: claude, openai
 
 claude:
