@@ -12,6 +12,9 @@ from vocab_audio_automator.utils.strings import GUIStrings
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
 
+LLM_PROVIDER = ["openai, claude"]
+AUDIO_PROVIDER = ["openai", "edge_tts"]
+
 
 class AnkiGeneratorApp(ctk.CTk):
     def __init__(self):
@@ -62,7 +65,7 @@ class AnkiGeneratorApp(ctk.CTk):
         self.switch_audio_only.pack(pady=(0, 15))
 
         self.btn_select_file = ctk.CTkButton(
-            self.tab_gen, text=GUIStrings.BUTTON_LABEL_CSV, command=self.select_file
+            self.tab_gen, text=GUIStrings.BUTTON_CSV, command=self.select_file
         )
         self.btn_select_file.pack(pady=5)
         self.lbl_file = ctk.CTkLabel(
@@ -72,7 +75,7 @@ class AnkiGeneratorApp(ctk.CTk):
 
         self.btn_select_output = ctk.CTkButton(
             self.tab_gen,
-            text=GUIStrings.BUTTON_LABEL_OUTPUT,
+            text=GUIStrings.BUTTON_OUTPUT,
             command=self.select_output_dir,
             fg_color="gray",
         )
@@ -144,7 +147,7 @@ class AnkiGeneratorApp(ctk.CTk):
 
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text=GUIStrings.LABEL_API_KEYS,
+            text=GUIStrings.LABEL_API_KEYS_TITLE,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(10, 5))
         self.entry_openai = create_labeled_entry(
@@ -202,49 +205,53 @@ class AnkiGeneratorApp(ctk.CTk):
             text_color="gray",
         ).pack(anchor="w", padx=10, pady=(5, 0))
         self.opt_sentence_provider = ctk.CTkOptionMenu(
-            self.scroll_frame_set, values=["openai", "claude"], width=450
+            self.scroll_frame_set, values=LLM_PROVIDER, width=450
         )
         self.opt_sentence_provider.pack(anchor="w", padx=10, pady=(0, 5))
         ctk.CTkLabel(
-            self.scroll_frame_set, text="Audio Generation Provider:", text_color="gray"
+            self.scroll_frame_set,
+            text=GUIStrings.LABEL_AUDIO_PROVIDER,
+            text_color="gray",
         ).pack(anchor="w", padx=10, pady=(5, 0))
         self.opt_audio_provider = ctk.CTkOptionMenu(
-            self.scroll_frame_set, values=["openai", "edge_tts"], width=450
+            self.scroll_frame_set, values=AUDIO_PROVIDER, width=450
         )
         self.opt_audio_provider.pack(anchor="w", padx=10, pady=(0, 5))
 
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text="4. Model Details",
+            text=GUIStrings.LABEL_MODEL_DETAILS,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(20, 5))
         self.entry_openai_sent_model = create_labeled_entry(
-            self.scroll_frame_set, "OpenAI Text Model ID:", "e.g. gpt-4o-mini"
+            self.scroll_frame_set,
+            GUIStrings.LABEL_OPENAI_MODEL_ID,
+            GUIStrings.PLACEHOLDER_OPENAI_MODEL_ID,
         )
         self.entry_openai_audio_model = create_labeled_entry(
             self.scroll_frame_set,
-            "OpenAI Audio/TTS Model ID:",
-            "e.g. gpt-4o-audio-preview",
+            GUIStrings.LABEL_OPENAI_AUDIO_ID,
+            GUIStrings.PLACEHOLDER_OPENAI_AUDIO_ID,
         )
         self.entry_openai_voices = create_labeled_entry(
             self.scroll_frame_set,
-            "OpenAI Voices (comma separated):",
-            "e.g. alloy, echo",
+            GUIStrings.LABEL_OPENAI_VOICES,
+            GUIStrings.PLACEHOLDER_OPENAI_VOICES,
         )
         self.entry_claude_model = create_labeled_entry(
             self.scroll_frame_set,
-            "Claude Text Model ID:",
-            "e.g. claude-3-5-sonnet-20241022",
+            GUIStrings.LABEL_CLAUDE_MODEL_ID,
+            GUIStrings.PLACEHOLDER_CLAUDE_MODEL_ID,
         )
         self.entry_edge_voices = create_labeled_entry(
             self.scroll_frame_set,
-            "Edge TTS Voices (comma separated):",
-            "e.g. it-IT-DiegoNeural",
+            GUIStrings.LABEL_EDGE_TTS_VOICES,
+            GUIStrings.PLACEHOLDER_EDGE_TTS_VOICES,
         )
 
         self.btn_save_settings = ctk.CTkButton(
             self.scroll_frame_set,
-            text="Save Standard Settings",
+            text=GUIStrings.BUTTON_SAVE_SETTINGS,
             command=self.save_settings,
             fg_color="green",
             hover_color="darkgreen",
@@ -273,12 +280,12 @@ class AnkiGeneratorApp(ctk.CTk):
 
         ctk.CTkLabel(
             self.scroll_frame_adv,
-            text="Technical Anki Config",
+            text=GUIStrings.LABEL_ANKI_CONFIG,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(10, 5))
         ctk.CTkLabel(
             self.scroll_frame_adv,
-            text="Anki Model ID (Deck Template ID):",
+            text=GUIStrings.LABEL_ANKI_DECK_ID,
             text_color="gray",
         ).pack(anchor="w", padx=10, pady=(5, 0))
         self.entry_model_id = ctk.CTkEntry(self.scroll_frame_adv, width=300)
@@ -286,37 +293,37 @@ class AnkiGeneratorApp(ctk.CTk):
 
         ctk.CTkLabel(
             self.scroll_frame_adv,
-            text="Master Prompt Templates",
+            text=GUIStrings.LABEL_MAIN_PROMPT,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(20, 5))
         self.tb_system_prompt = create_labeled_textbox(
-            self.scroll_frame_adv, "System Prompt (Behavior limits):", height=80
+            self.scroll_frame_adv, GUIStrings.LABEL_SYSTEM_PROMPT, height=80
         )
         self.tb_sentence_gen = create_labeled_textbox(
-            self.scroll_frame_adv, "Sentence Generation Prompt (Structure):", height=200
+            self.scroll_frame_adv, GUIStrings.LABEL_SENTENCE_PROMPT, height=200
         )
         self.tb_audio_inst = create_labeled_textbox(
-            self.scroll_frame_adv, "Audio Instructions (TTS Behavior):", height=80
+            self.scroll_frame_adv, GUIStrings.LABEL_AUDIO_INSTRUCTIONS, height=80
         )
 
         ctk.CTkLabel(
             self.scroll_frame_adv,
-            text="Modular Prompt Add-ons",
+            text=GUIStrings.LABEL_MODULAR_PROMPTS,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(20, 5))
         self.tb_global_words = create_labeled_textbox(
-            self.scroll_frame_adv, "Global Words Add-on:", height=60
+            self.scroll_frame_adv, GUIStrings.LABEL_GLOBAL_WORDS, height=60
         )
         self.tb_bonus_all = create_labeled_textbox(
-            self.scroll_frame_adv, "Bonus Words (All mode):", height=60
+            self.scroll_frame_adv, GUIStrings.LABEL_BONUS_WORDS_ALL, height=60
         )
         self.tb_bonus_some = create_labeled_textbox(
-            self.scroll_frame_adv, "Bonus Words (Some mode):", height=60
+            self.scroll_frame_adv, GUIStrings.LABEL_BONUS_WORDS_SOME, height=60
         )
 
         self.btn_save_adv = ctk.CTkButton(
             self.scroll_frame_adv,
-            text="Save Advanced Prompts & IDs",
+            text=GUIStrings.BUTTON_SAVE_ADVANCED,
             command=self.save_advanced_settings,
             fg_color="darkred",
             hover_color="#6b0000",
@@ -332,15 +339,17 @@ class AnkiGeneratorApp(ctk.CTk):
     def toggle_mode(self):
         """Changes the UI based on whether Audio-Only mode is enabled."""
         if self.switch_audio_only.get():
-            self.btn_select_file.configure(text="1. Select Sentences File (.txt)")
+            self.btn_select_file.configure(text=GUIStrings.BUTTON_TXT)
             self.file_types = [("Text Files", "*.txt")]
             self.lbl_file.configure(
-                text="Format required: Target | Source", text_color="yellow"
+                text=GUIStrings.LABEL_FORMAT_REQUIRED, text_color="yellow"
             )
         else:
-            self.btn_select_file.configure(text="1. Select Input File (.csv)")
+            self.btn_select_file.configure(text=GUIStrings.BUTTON_CSV)
             self.file_types = [("CSV Files", "*.csv")]
-            self.lbl_file.configure(text="No CSV selected", text_color="gray")
+            self.lbl_file.configure(
+                text=GUIStrings.LABEL_NO_FILE_SELECTED, text_color="gray"
+            )
 
         self.input_path = None  # Reset selected file when switching modes
 
@@ -351,26 +360,27 @@ class AnkiGeneratorApp(ctk.CTk):
             self.lbl_file.configure(text=filename.split("/")[-1], text_color="white")
 
     def select_output_dir(self):
-        dirname = filedialog.askdirectory(title="Select Output Folder")
+        dirname = filedialog.askdirectory(title=GUIStrings.BUTTON_OUTPUT)
         if dirname:
             self.output_dir = dirname
             display_path = dirname if len(dirname) < 40 else "..." + dirname[-37:]
             self.lbl_output.configure(
-                text=f"Output directory: {display_path}", text_color="white"
+                text=GUIStrings.LABEL_OUTPUT_DIRECTORY.format(dir=display_path),
+                text_color="white",
             )
 
     def start_generation(self):
         if not self.input_path:
-            self.update_status("Please select an input file first!", "red")
+            self.update_status(GUIStrings.LABEL_ERROR_SELECT_FILE, "red")
             return
 
         is_audio_only = self.switch_audio_only.get()
 
         if is_audio_only and not self.input_path.lower().endswith(".txt"):
-            self.update_status("Error: Audio-only mode requires a .txt file!", "red")
+            self.update_status(GUIStrings.LABEL_ERROR_TXT_FILE, "red")
             return
         elif not is_audio_only and not self.input_path.lower().endswith(".csv"):
-            self.update_status("Error: AI Generation requires a .csv file!", "red")
+            self.update_status(GUIStrings.LABEL_ERROR_CSV_FILE, "red")
             return
 
         try:
@@ -382,9 +392,7 @@ class AnkiGeneratorApp(ctk.CTk):
                             valid_format = True
                             break
                 if not valid_format:
-                    self.update_status(
-                        "Error: Invalid TXT! Missing 'Target | Source' format.", "red"
-                    )
+                    self.update_status(GUIStrings.LABEL_ERROR_INVALID_TXT, "red")
                     return
             else:
                 import csv
@@ -395,19 +403,19 @@ class AnkiGeneratorApp(ctk.CTk):
                     headers_clean = [h.strip().lower() for h in headers]
                     if "word" not in headers_clean:
                         self.update_status(
-                            "Error: CSV must contain a 'word' column in the first row!",
+                            GUIStrings.LABEL_ERROR_WORD_COLUMN,
                             "red",
                         )
                         return
         except Exception as e:
-            self.update_status(f"Error reading file: {e}", "red")
+            self.update_status(GUIStrings.LABEL_GENERAL_ERROR.format(exc=e), "red")
             return
 
         if not self.entry_deck_name.get().strip():
-            self.update_status("Please enter an Anki Deck Name!", "red")
+            self.update_status(GUIStrings.LABEL_ERROR_ANKI_NAME, "red")
             return
         if not self.entry_filename.get().strip():
-            self.update_status("Please enter a valid Output Filename!", "red")
+            self.update_status(GUIStrings.LABEL_ERROR_OUTPUT_NAME, "red")
             return
 
         self.btn_generate.configure(state="disabled")
@@ -441,7 +449,7 @@ class AnkiGeneratorApp(ctk.CTk):
         )
         if success:
             self.update_status(
-                f"Successfully finished! {custom_name}.apkg created.", "green"
+                GUIStrings.LABEL_GENERATION_SUCCESS.format(file=custom_name), "green"
             )
             self.update_progress(1.0)
 
@@ -474,16 +482,12 @@ class AnkiGeneratorApp(ctk.CTk):
             self.entry_target.insert(0, defaults.get("target_language", ""))
             self.entry_source.insert(0, defaults.get("source_language", ""))
             self.entry_level.insert(0, defaults.get("level", ""))
-            self.entry_sentences.insert(
-                0, str(defaults.get("number_of_sentences", "5"))
-            )
+            self.entry_sentences.insert(0, str(defaults.get("number_of_sentences", "")))
             self.entry_setting.insert(0, defaults.get("setting", ""))
 
             model_config = config.get("model", {})
-            self.opt_sentence_provider.set(
-                model_config.get("sentence_generation", "openai")
-            )
-            self.opt_audio_provider.set(model_config.get("audio", "edge_tts"))
+            self.opt_sentence_provider.set(model_config.get("sentence_generation", ""))
+            self.opt_audio_provider.set(model_config.get("audio", ""))
 
             openai_cfg = config.get("openai", {})
             self.entry_openai_sent_model.insert(
