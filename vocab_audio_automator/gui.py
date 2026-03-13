@@ -16,7 +16,18 @@ class AnkiGeneratorApp(ctk.CTk):
         
         # --- Window Setup ---
         self.title("LLM Anki Generator")
-        self.geometry("700x850")
+        
+        window_width = 700
+        window_height = 850
+        
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        
+        x_coordinate = int((screen_width / 2) - (window_width / 2))
+        y_coordinate = int((screen_height / 2) - (window_height / 2))
+        
+        self.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
+        
         self.csv_path = None
         self.output_dir = "outputs"
 
@@ -26,7 +37,7 @@ class AnkiGeneratorApp(ctk.CTk):
         
         self.tab_gen = self.tabview.add("Generator")
         self.tab_set = self.tabview.add("Settings")
-        self.tab_adv = self.tabview.add("Advanced (Prompts)")
+        self.tab_adv = self.tabview.add("Advanced")
         
         self.setup_generator_tab()
         self.setup_settings_tab()
