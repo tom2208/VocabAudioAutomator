@@ -16,7 +16,7 @@ class AnkiGeneratorApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("LLM Anki Generator")
+        self.title("Vocab Audio Automator")
 
         window_width = 700
         window_height = 850
@@ -53,7 +53,6 @@ class AnkiGeneratorApp(ctk.CTk):
         )
         self.title_label.pack(pady=(10, 5))
 
-        # NEU: Der Modus-Schalter
         self.switch_audio_only = ctk.CTkSwitch(
             self.tab_gen,
             text="Audio & Deck Only Mode (Skip AI Text Generation)",

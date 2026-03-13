@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vocab_audio_automator"
-version = "0.1.0"
+version = "1.0.0"
 description = "Generates Anki Cards with Audio via LLMs"
 authors = ["tom2208 <dev.tom2208@proton.me>"]
 # package-mode = false wurde entfernt!
