@@ -6,7 +6,8 @@ import customtkinter as ctk
 from tkinter import filedialog
 from dotenv import load_dotenv, set_key
 
-from .core import run_pipeline
+from vocab_audio_automator.core.core import run_pipeline
+from vocab_audio_automator.utils.strings import GUIStrings
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
@@ -16,15 +17,15 @@ class AnkiGeneratorApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Vocab Audio Automator v1.0.0")
+        WINDOW_WIDTH = 700
+        WINDOW_HEIGHT = 850
+        self.title(GUIStrings.APP_TITLE)
 
-        window_width = 700
-        window_height = 850
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        x_coordinate = int((screen_width / 2) - (window_width / 2))
-        y_coordinate = int((screen_height / 2) - (window_height / 2))
-        self.geometry(f"{window_width}x{window_height}+{x_coordinate}+{y_coordinate}")
+        x_coordinate = int((screen_width / 2) - (WINDOW_WIDTH / 2))
+        y_coordinate = int((screen_height / 2) - (WINDOW_HEIGHT / 2))
+        self.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}+{x_coordinate}+{y_coordinate}")
 
         self.input_path = None
         self.output_dir = "outputs"
@@ -33,9 +34,9 @@ class AnkiGeneratorApp(ctk.CTk):
         self.tabview = ctk.CTkTabview(self)
         self.tabview.pack(padx=20, pady=10, fill="both", expand=True)
 
-        self.tab_gen = self.tabview.add("Generator")
-        self.tab_set = self.tabview.add("Settings")
-        self.tab_adv = self.tabview.add("Advanced (Prompts)")
+        self.tab_gen = self.tabview.add(GUIStrings.GEN_TAB_NAME)
+        self.tab_set = self.tabview.add(GUIStrings.SETTINGS_TAB_NAME)
+        self.tab_adv = self.tabview.add(GUIStrings.ADVANDCED_TAB_NAME)
 
         self.setup_generator_tab()
         self.setup_settings_tab()
@@ -48,67 +49,66 @@ class AnkiGeneratorApp(ctk.CTk):
     def setup_generator_tab(self):
         self.title_label = ctk.CTkLabel(
             self.tab_gen,
-            text="Anki Card Generator",
+            text=GUIStrings.LABEL_GENERATOR_TAB_TITLE,
             font=ctk.CTkFont(size=20, weight="bold"),
         )
         self.title_label.pack(pady=(10, 5))
 
         self.switch_audio_only = ctk.CTkSwitch(
             self.tab_gen,
-            text="Audio & Deck Only Mode (Skip AI Text Generation)",
+            text=GUIStrings.LABEL_AUDIO_ONLY_TOGGLE_TITLE,
             command=self.toggle_mode,
         )
         self.switch_audio_only.pack(pady=(0, 15))
 
         self.btn_select_file = ctk.CTkButton(
-            self.tab_gen, text="1. Select Input File (.csv)", command=self.select_file
+            self.tab_gen, text=GUIStrings.BUTTON_LABEL_CSV, command=self.select_file
         )
         self.btn_select_file.pack(pady=5)
         self.lbl_file = ctk.CTkLabel(
-            self.tab_gen, text="No File selected", text_color="gray"
+            self.tab_gen, text=GUIStrings.LABEL_NO_FILE_SELECTED, text_color="gray"
         )
         self.lbl_file.pack(pady=(0, 5))
 
         self.btn_select_output = ctk.CTkButton(
             self.tab_gen,
-            text="2. Select Output Folder",
+            text=GUIStrings.BUTTON_LABEL_OUTPUT,
             command=self.select_output_dir,
             fg_color="gray",
         )
         self.btn_select_output.pack(pady=5)
         self.lbl_output = ctk.CTkLabel(
             self.tab_gen,
-            text=f"Output directory: ./{self.output_dir}",
+            text=GUIStrings.LABEL_OUTPUT_DIRECTORY.format(dir=self.output_dir),
             text_color="gray",
         )
         self.lbl_output.pack(pady=(0, 5))
 
         self.lbl_deck_desc = ctk.CTkLabel(
             self.tab_gen,
-            text="3. Exact Target Anki Deck Name:",
+            text=GUIStrings.LABEL_ANKI_DECK_NAME,
             font=ctk.CTkFont(weight="bold"),
         )
         self.lbl_deck_desc.pack(pady=(10, 0))
         self.entry_deck_name = ctk.CTkEntry(
-            self.tab_gen, placeholder_text="e.g. Italiano", width=300
+            self.tab_gen, placeholder_text=GUIStrings.PLACEHOLDER_DECK_NAME, width=300
         )
         self.entry_deck_name.pack(pady=(5, 5))
 
         self.lbl_filename_desc = ctk.CTkLabel(
             self.tab_gen,
-            text="4. Name of the Output File (.apkg):",
+            text=GUIStrings.LABEL_OUTPUT_NAME,
             font=ctk.CTkFont(weight="bold"),
         )
         self.lbl_filename_desc.pack(pady=(5, 0))
         self.entry_filename = ctk.CTkEntry(
-            self.tab_gen, placeholder_text="e.g. Spanish_Week_1", width=300
+            self.tab_gen, placeholder_text=GUIStrings.PLACEHOLDER_FILE_NAME, width=300
         )
         self.entry_filename.pack(pady=(5, 10))
-        self.entry_filename.insert(0, "AI_Generated_Sentences")
 
         self.btn_generate = ctk.CTkButton(
             self.tab_gen,
-            text="5. Start Generation",
+            text=GUIStrings.BUTTON_START_GENERATION,
             command=self.start_generation,
             height=40,
         )
@@ -121,7 +121,7 @@ class AnkiGeneratorApp(ctk.CTk):
         self.status_label.pack(pady=10)
 
     ###############################################
-    # TAB 2 & 3: SETTINGS (Condensed for brevity) #
+    # TAB 2 & 3: SETTINGS                         #
     ###############################################
     def setup_settings_tab(self):
         self.scroll_frame_set = ctk.CTkScrollableFrame(
@@ -144,49 +144,61 @@ class AnkiGeneratorApp(ctk.CTk):
 
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text="1. API Keys (.env)",
+            text=GUIStrings.LABEL_API_KEYS,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(10, 5))
         self.entry_openai = create_labeled_entry(
-            self.scroll_frame_set, "OpenAI API Key:", "sk-...", is_password=True
+            self.scroll_frame_set,
+            GUIStrings.LABEL_OPENAI_KEY,
+            GUIStrings.PLACEHOLDER_OPENAI_KEY,
+            is_password=True,
         )
         self.entry_claude = create_labeled_entry(
-            self.scroll_frame_set, "Anthropic API Key:", "sk-ant-...", is_password=True
+            self.scroll_frame_set,
+            GUIStrings.LABEL_ANTHROPIC_KEY,
+            GUIStrings.PLACEHOLDER_ANTHROPIC_KEY,
+            is_password=True,
         )
 
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text="2. Language Defaults",
+            text=GUIStrings.LABEL_LANGUAGE_DEFAULTS_TITLE,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(20, 5))
         self.entry_target = create_labeled_entry(
             self.scroll_frame_set,
-            "Target Language (The language you are learning):",
-            "e.g. Italian",
+            GUIStrings.LABEL_TARGET_LANGUAGE,
+            GUIStrings.PLACEHOLDER_TARGET_LANGUAGE,
         )
         self.entry_source = create_labeled_entry(
             self.scroll_frame_set,
-            "Source Language (Your native/translation language):",
-            "e.g. German",
+            GUIStrings.LABEL_SOURCE_LANGUAGE,
+            GUIStrings.PLACEHOLDER_SOURCE_LANGUAGE,
         )
         self.entry_level = create_labeled_entry(
-            self.scroll_frame_set, "Language Level (Difficulty):", "e.g. A2"
+            self.scroll_frame_set,
+            GUIStrings.LABEL_LANGUAGE_LEVEL,
+            GUIStrings.PLACEHOLDER_LANGUAGE_LEVEL,
         )
         self.entry_sentences = create_labeled_entry(
-            self.scroll_frame_set, "Default Number of Sentences:", "e.g. 5"
+            self.scroll_frame_set,
+            GUIStrings.LABEL_NUM_SENTENCES,
+            GUIStrings.PLACEHOLDER_NUM_SENTENCES,
         )
         self.entry_setting = create_labeled_entry(
-            self.scroll_frame_set, "Setting (Context):", "e.g. General context"
+            self.scroll_frame_set,
+            GUIStrings.LABEL_SETTING,
+            GUIStrings.PLACEHOLDER_SETTING,
         )
 
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text="3. AI Pipeline Providers",
+            text=GUIStrings.LABEL_LLM_PROVIDERS_TITLE,
             font=ctk.CTkFont(weight="bold", size=16),
         ).pack(anchor="w", pady=(20, 5))
         ctk.CTkLabel(
             self.scroll_frame_set,
-            text="Sentence Generation Provider:",
+            text=GUIStrings.LABEL_SENTENCE_PROVIDER,
             text_color="gray",
         ).pack(anchor="w", padx=10, pady=(5, 0))
         self.opt_sentence_provider = ctk.CTkOptionMenu(
@@ -455,7 +467,7 @@ class AnkiGeneratorApp(ctk.CTk):
                 config = yaml.safe_load(f) or {}
 
             anki_cfg = config.get("anki", {})
-            self.entry_deck_name.insert(0, anki_cfg.get("deck_name", "Italiano"))
+            self.entry_deck_name.insert(0, anki_cfg.get("deck_name", ""))
             self.entry_model_id.insert(0, str(anki_cfg.get("model_id", "")))
 
             defaults = config.get("defaults", {})

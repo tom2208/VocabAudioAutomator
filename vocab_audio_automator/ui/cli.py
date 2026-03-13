@@ -1,5 +1,5 @@
 import argparse
-from .core import run_pipeline
+from vocab_audio_automator.core.core import run_pipeline
 
 
 def main():
