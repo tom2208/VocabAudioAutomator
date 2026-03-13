@@ -1,6 +1,6 @@
 # VocabAudioAutomator
 
-VocabAudioAutomator is a modular Python pipeline that automates the creation of high-quality, audio-enabled Anki flashcards for language learning. 
+VocabAudioAutomator is a modular Python pipeline (now featuring a sleek Desktop GUI!) that automates the creation of high-quality, audio-enabled Anki flashcards for language learning. 
 
 Whether you want to fully automate sentence generation using AI or manually write your own sentences and just generate the text-to-speech (TTS) audio, this tool adapts to your workflow and budget.
 
@@ -8,9 +8,14 @@ Whether you want to fully automate sentence generation using AI or manually writ
   - [✨ Features](#-features)
   - [⚙️ Prerequisites](#️-prerequisites)
   - [🚀 Setup \& Installation](#-setup--installation)
-  - [🛠️ How to Use (The Pipeline)](#️-how-to-use-the-pipeline)
-    - [Option A: The Full Automated Pipeline](#option-a-the-full-automated-pipeline)
-    - [Option B: The Free Route (Manual Sentences + Edge TTS)](#option-b-the-free-route-manual-sentences--edge-tts)
+  - [🛠️ How to Use (GUI \& CLI)](#️-how-to-use-gui--cli)
+    - [Option A: The Desktop GUI (Recommended)](#option-a-the-desktop-gui-recommended)
+    - [Option B: The Command Line Interface (CLI)](#option-b-the-command-line-interface-cli)
+  - [📦 Building the Standalone App (.exe)](#-building-the-standalone-app-exe)
+  - [📝 Preparing Your Vocabulary (The CSV)](#-preparing-your-vocabulary-the-csv)
+    - [The Columns](#the-columns)
+    - [The `!GLOBAL` Command](#the-global-command)
+    - [Example `vocab.csv`](#example-vocabcsv)
   - [💸 Real-World Costs \& My Experience](#-real-world-costs--my-experience)
     - [The "Smart \& Thrifty" Route (My Personal Choice)](#the-smart--thrifty-route-my-personal-choice)
     - [The "Quality" Route (Adding OpenAI TTS)](#the-quality-route-adding-openai-tts)
@@ -20,13 +25,13 @@ Whether you want to fully automate sentence generation using AI or manually writ
 
 ## ✨ Features
 
-* **AI Sentence Generation:** Feed the script a CSV list of vocabulary words, and it uses the Anthropic Claude API (or OpenAI's GPT's) to generate natural, context-rich sentences with both source and target language translations. *(Note: Other LLMs coming soon).*
+* **User-Friendly GUI & CLI:** Run the tool via a modern graphical desktop interface or integrate it into your terminal workflow. No coding knowledge required to adjust settings!
+* **AI Sentence Generation:** Feed the script a CSV list of vocabulary words, and it uses the Anthropic Claude API (or OpenAI's GPT models) to generate natural, context-rich sentences with both source and target language translations.
 * **High-Quality Audio (TTS):** Generate native-sounding audio for your cards using either:
   * **Microsoft Edge TTS:** Free (for personal use).
   * **OpenAI (gpt-4o / gpt-4o-mini):** Quality AI voices (Requires API key).
-* **Automated Anki Deck Creation:** Packages your text and audio into a ready-to-import Anki deck file. Just double-click the output file to add it to Anki!
-* **Seamless Merging:** Name the output deck the same as an existing Anki deck, and Anki will automatically add the new cards to it (without overwriting your old ones).
-* **Modular & Skippable Steps:** Don't want to pay for Claude? You can write your own sentences in the required format, drop them in the source folder, and use Edge TTS to generate a completely free audio deck.
+* **Automated Anki Deck Creation:** Packages your text and audio into a ready-to-import Anki deck file (`.apkg`).
+* **Seamless Merging:** Name the output deck the same as an existing Anki deck, and Anki will automatically add the new cards to it without overwriting your old ones.
 
 ## ⚙️ Prerequisites
 
@@ -41,95 +46,97 @@ Whether you want to fully automate sentence generation using AI or manually writ
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/tom2208/VocabAudioAutomator.git
+   git clone [https://github.com/tom2208/VocabAudioAutomator.git](https://github.com/tom2208/VocabAudioAutomator.git)
    cd VocabAudioAutomator
+   ```
 
 2. Install the dependencies using Poetry:
-    ```bash
-    poetry install
-    ```
+   ```bash
+   poetry install
+   ```
 
-3. Set up your API Keys (Secrets):
-    Create a `.env` file in the root directory and add your API keys. Never share this file or upload it to GitHub:
-    ```
-    OPENAI_API_KEY=sk-proj-...
-    ANTHROPIC_API_KEY=sk-ant-...
-    ```
+3. Configure your Settings (Two ways to do this):
+   * **The Easy Way (via GUI):** Just launch the app (see Option A below) and enter your API keys and language preferences directly in the "Settings" tab. The app will save them for you.
+   * **The Manual Way:** Create a `.env` file for your API keys (`OPENAI_API_KEY=...` and `ANTHROPIC_API_KEY=...`) and rename `config.yaml.example` to `config.yaml` to adjust your settings manually.
 
-4. Configure your Settings:
-    Copy the config.yaml.example file and rename it to `config.yaml`. Adjust your target language, difficulty level, and preferred TTS voices here.
+## 🛠️ How to Use (GUI & CLI)
+
+*Note: Always prefix your commands with `poetry run` to ensure they execute inside the correct virtual environment.*
+
+### Option A: The Desktop GUI (Recommended)
+Launch the graphical interface with a single command:
+
+```bash
+poetry run anki-gui
+```
+
+This opens the VocabAudioAutomator App, which features three tabs:
+1. **Generator:** Select your vocabulary CSV, choose an output folder, name your Anki deck, and hit "Start Generation". A progress bar will keep you updated.
+2. **Settings:** Easily input your API keys, change your target language, adjust the difficulty level, and select your preferred TTS voices.
+3. **Advanced (Prompts):** For power users! Edit the exact System Prompts and formatting rules the AI uses, or change the Anki Model ID.
+
+### Option B: The Command Line Interface (CLI)
+If you prefer the terminal, you can run the entire pipeline with a single command. 
+
+```bash
+poetry run anki-cli vocab.csv -o "my_output_folder" -n "My_Spanish_Cards" -d "Español_Deck"
+```
+
+**Available CLI Arguments:**
+* `csv_file` (Required): Path to your vocabulary CSV file.
+* `-o`, `--output` (Optional): Target directory for generated files (default: 'outputs').
+* `-n`, `--name` (Optional): Name of the final `.apkg` file.
+* `-d`, `--deck` (Optional): Exact Name of the Target Anki Deck (overrides the `config.yaml`).
+
+## 📦 Building the Standalone App (.exe)
+
+If you want to share this tool with friends who don't have Python installed, or if you just want a convenient double-click application for yourself, you can easily compile the script into a standalone `.exe` using the included `auto-py-to-exe` package.
+
+1. **Run the Converter:**
+   In your terminal, run:
+   ```bash
+   poetry run auto-py-to-exe
+   ```
+
+2. **Configure the Build:**
+   A new window/app will open. Configure it exactly like this:
+   * **Script Location:** Browse and select the included `start.py` file from the main folder.
+   * **Onefile:** Select **One Directory** (This is much faster and more reliable than a single huge file).
+   * **Console Window:** Select **Window Based (hide the console)**.
+   * **Advanced:** Scroll down to the `--collect-all` field, click the `+` icon and type `customtkinter`.
+
+3. **Convert & Finalize:**
+   * Click the big blue **Convert .py to .exe** button. 
+   * Once finished, open the output folder. 
+   * **Crucial Step:** Copy your `config.yaml`, a blank `.env` file (remove your API keys before sharing!), and a sample `vocab.csv` into this new output folder, right next to the `.exe`. 
+   
+You can now zip this folder and share it! Anyone can just double-click the `.exe` to run the GUI.
 
 ## 📝 Preparing Your Vocabulary (The CSV)
-Before running the AI pipeline, you need to tell it what words to generate sentences for. This is done using the `vocab.csv` file. The file must be in the same directory as the `.py` scripts.
+Before running the AI pipeline, you need to tell it what words to generate sentences for. This is done using a `.csv` file. 
 
-The CSV file uses specific columns allowing you to customize the AI's output on a word-by-word basis. Only the word column is strictly required; the rest can be left blank to use the defaults from your `config.yaml`.
+The CSV file uses specific columns allowing you to customize the AI's output on a word-by-word basis. Only the `word` column is strictly required; the rest can be left blank to use the defaults from your settings.
 
 ### The Columns
 * `word`: (Required) The target vocabulary word you want to learn.
-
-* `count`: (Optional) How many sentences to generate. If left blank, it uses the default (5) from `config.yaml`.
-
+* `count`: (Optional) How many sentences to generate. If left blank, it uses the default (e.g., 5).
 * `bonus_words`: (Optional) Specific extra words you want the AI to include in the sentences (e.g., forcing it to use specific verbs or adjectives alongside your main word).
-
-* `bonus_mode`: (Optional) How strict the AI should be about using the bonus words (options: all, some).
-
-* `setting`: (Optional) A specific theme or scenario for the sentences (e.g., "At a restaurant", "In a business meeting"). Overrides the default setting. You could also try to ask the AI for grammar or anything else, like "use the subjunctive".
+* `bonus_mode`: (Optional) How strict the AI should be about using the bonus words (options: `all`, `some`).
+* `setting`: (Optional) A specific theme or scenario for the sentences (e.g., "At a restaurant", "In a business meeting"). Overrides the default setting. You could also try to ask the AI for grammar specifics, like "use the subjunctive".
 
 ### The `!GLOBAL` Command
 If you want to apply a specific list of bonus words to your *entire* vocabulary list, you do not need to copy and paste it on every single row. 
 
-Simply type `!GLOBAL` in the `word` column at the top of your file and put your "global" bonus words in the `bonus_words` column separated with a semicolon `;` or whitespace. This way you don't need to copy your bonus words into every row. Specially useful for long lists.
+Simply type `!GLOBAL` in the `word` column at the top of your file and put your "global" bonus words in the `bonus_words` column separated with a semicolon `;` or whitespace.
 
 ### Example `vocab.csv`
 ```csv
-word,       count,  bonus_words,    bonus_mode, setting
-!GLOBAL,    ,       ,               ,           At an Italian restaurant
-evitare,    ,       ,               ,
-ordinare,   3,      vino rosso,     all,
-riunione,   ,       ,               all,        Corporate office environment
+word,count,bonus_words,bonus_mode,setting
+!GLOBAL,,,,At an Italian restaurant
+evitare,,,,
+ordinare,3,vino rosso,all,
+riunione,,,all,Corporate office environment
 ```
-
-## 🛠️ How to Use (The Pipeline)
-You can run the entire pipeline at once using the master script, or run individual scripts depending on your needs.
-
-*Note: Prefix your commands with poetry run to ensure they execute inside the virtual environment.*
-
-### Option A: The Full Automated Pipeline
-Place your target vocabulary words in the `vocab.csv` file.
-
-Run the master script:
-
-```bash
-poetry run python run_all.py
-```
-The script will sequentially generate sentences -> generate audio -> package the .apkg file.
-
-Double-click the generated .apkg file to import it into Anki.
-
-### Option B: The Free Route (Manual Sentences + Edge TTS)
-If you prefer to write your own sentences, you can skip the LLM costs entirely!
-
-1. Write your sentences in the required format and save them in the `source/` folder as a `.txt`. You can even split the sentence among different files, the script will just take the content of all `.txt` files and process it. So delete all `.txt` files you don't want to be converted into Anki cards.
-    The correct format for the `.txt` files is:
-
-    ```
-    target language sentence 1 | source language translation sentence 1
-    target language sentence 2 | source language translation sentence 2
-    ...
-    ```
-
-2. Ensure your audio model in the config.yaml is set to use `edge_tts`.
-3. If you want to import your cards into an existing deck make sure you use the exact same name (case sensitive).
-
-4. Run the audio and deck generation scripts:
-
-    ```bash
-    poetry run python gen_audio.py
-    poetry run python build_deck.py
-    ```
-5. The script has now created a `AI_Generated_Sentences.apkg` file you can just double-click it to import it into Anki or do it manually. If you set the correct name the cards will be imported into the desired deck. You can delete the content of the `output/` directory now.
-
-**Hint** you could ask a free LLM to produce sentences in the desired format and just copy and paste them into a `.txt` file. Feel free to use the prompt in the `config.yaml` for that.
 
 ## 💸 Real-World Costs & My Experience
 
@@ -141,8 +148,7 @@ To give you a realistic idea, here is a cost breakdown based on an **ambitious l
 
 ### The "Smart & Thrifty" Route (My Personal Choice)
 If you want great flashcards without a monthly subscription fee, use Claude for the text and Edge TTS for the audio.
-* **Text Generation (Claude 3.6 Sonnet):** I generated over 100 sentences for about $0.03. At a pace of 1,500 sentences a month, **Claude costs me roughly ~$0.50 per month.**  
-* **Audio Generation (Edge TTS):** **$0.00 (Free).** The pronunciation is accurate and totally fine for learning, even if it isn't the absolute most natural-sounding AI voice out there. I personally stick with this option!
+* **Text Generation (Claude 3.5 Sonnet):** I generated over 100 sentences for about $0.03. At a pace of 1,500 sentences a month, **Claude costs me roughly ~$0.50 per month.** * **Audio Generation (Edge TTS):** **$0.00 (Free).** The pronunciation is accurate and totally fine for learning, even if it isn't the absolute most natural-sounding AI voice out there. I personally stick with this option!
 * **Total Cost:** **Under $1.00 a month.**
 
 ### The "Quality" Route (Adding OpenAI TTS)
@@ -158,7 +164,7 @@ If you want natural, native-sounding voices and don't mind paying a bit more, yo
   * **Verdict:** A great middle-ground, but be aware of minor quirks. In my testing with Italian, it occasionally had rare pronunciation issues (like pronouncing an 'r' slightly like an 'l').
 
 ## 💡 Troubleshooting & Best Practices
-* Special Characters Breaking (ß, ä, è, etc.): If your generated flashcards have weird symbols instead of accents or umlauts, the issue is your CSV encoding. When saving your `vocab.csv` from Excel or LibreOffice, you must select CSV UTF-8 (Comma delimited) as the save format.
+* **Special Characters Breaking (ß, ä, è, etc.):** If your generated flashcards have weird symbols instead of accents or umlauts, the issue is your CSV encoding. When saving your `vocab.csv` from Excel or LibreOffice, you must select **CSV UTF-8 (Comma delimited)** as the save format.
 
 ## ⚖️ Legal & Usage Disclaimer
 

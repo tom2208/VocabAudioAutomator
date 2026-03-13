@@ -22,15 +22,18 @@ __pycache__/
 # Anki deck files (These get large and change often)
 *.apkg
 
-# Generated audio files (Optional: uncomment if you don't want to upload MP3s)
+# Generated audio files
 *.mp3
 *.wav
 *.txt
 *csv
+*.zip
 
 # Ignore the output folder if you have one
 output/
 output/audio/
+start/
+VocabAudioAutomator/
 
 # =========================
 # OS & Editor Files
