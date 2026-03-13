@@ -16,7 +16,7 @@ class AnkiGeneratorApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Vocab Audio Automator")
+        self.title("Vocab Audio Automator v1.0.0")
 
         window_width = 700
         window_height = 850
