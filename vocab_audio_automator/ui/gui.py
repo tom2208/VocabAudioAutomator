@@ -584,13 +584,13 @@ class AnkiGeneratorApp(ctk.CTk):
                 )
 
             self.lbl_settings_status.configure(
-                text="Standard Settings successfully saved!", text_color="green"
+                text=GUIStrings.LABEL_SETTINGS_SAVED, text_color="green"
             )
             self.after(3000, lambda: self.lbl_settings_status.configure(text=""))
 
         except Exception as e:
             self.lbl_settings_status.configure(
-                text=f"Error saving: {e}", text_color="red"
+                text=GUIStrings.LABEL_ERROR_SAVING.format(exc=e), text_color="red"
             )
 
     def save_advanced_settings(self):
@@ -603,7 +603,7 @@ class AnkiGeneratorApp(ctk.CTk):
                 config["anki"]["model_id"] = int(self.entry_model_id.get().strip())
             except ValueError:
                 self.lbl_adv_status.configure(
-                    text="Error: Model ID must be a number!", text_color="red"
+                    text=GUIStrings.LABEL_ERROR_ANKI_MODEL_ID, text_color="red"
                 )
                 return
 
@@ -637,13 +637,13 @@ class AnkiGeneratorApp(ctk.CTk):
                 )
 
             self.lbl_adv_status.configure(
-                text="Advanced Settings successfully saved!", text_color="green"
+                text=GUIStrings.LABEL_SETTINGS_SAVED, text_color="green"
             )
             self.after(3000, lambda: self.lbl_adv_status.configure(text=""))
 
         except Exception as e:
             self.lbl_adv_status.configure(
-                text=f"Error saving advanced settings: {e}", text_color="red"
+                text=GUIStrings.LABEL_ERROR_SAVING.format(exp=e), text_color="red"
             )
 
 

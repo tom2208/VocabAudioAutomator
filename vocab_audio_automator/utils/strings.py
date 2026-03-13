@@ -103,6 +103,12 @@ class GUIStrings:
 
     ## save settings
     BUTTON_SAVE_SETTINGS = "Save Settings"
+    LABEL_SETTINGS_SAVED = (
+        "Settings successfully saved!"  # also used for the advanced tab
+    )
+    LABEL_ERROR_SAVING = (
+        "Error saving settings: {exc}"  # also used for the advanced tab
+    )
 
     # advanced tab
     LABEL_ANKI_CONFIG = "Technical Anki Config"
@@ -122,3 +128,4 @@ class GUIStrings:
 
     ## save settings
     BUTTON_SAVE_ADVANCED = "Save Advanced Settings"
+    LABEL_ERROR_ANKI_MODEL_ID = "Error: Model ID must be a number!"
