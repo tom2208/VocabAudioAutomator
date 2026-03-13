@@ -1,5 +1,6 @@
 import os
 import csv
+import sys
 import time
 import yaml
 import random
@@ -19,7 +20,6 @@ from dotenv import load_dotenv
 ################################
 
 def load_config(config_path="config.yaml"):
-    """Loads the YAML configuration file."""
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
@@ -29,8 +29,14 @@ def load_config(config_path="config.yaml"):
         raise Exception(f"Error parsing YAML config: {exc}")
 
 def initialize_clients(config):
-    """Initializes the correct AI client based on the config."""
-    load_dotenv()
+    # Ensure we look for the .env in the exact same directory as the executable/script
+    if getattr(sys, 'frozen', False):
+        base_dir = os.path.dirname(sys.executable)
+    else:
+        base_dir = os.getcwd()
+        
+    env_path = os.path.join(base_dir, ".env")
+    load_dotenv(dotenv_path=env_path, override=True)
     
     active_ai = config.get("model", {}).get("sentence_generation", "openai").lower()
     clients = {}
@@ -38,13 +44,13 @@ def initialize_clients(config):
     if active_ai == "openai":
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise Exception("Missing OPENAI_API_KEY in .env file.")
+            raise Exception(f"Missing OPENAI_API_KEY in {env_path}")
         clients["openai"] = OpenAI(api_key=api_key)
         
     elif active_ai == "claude":
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            raise Exception("Missing ANTHROPIC_API_KEY in .env file.")
+            raise Exception(f"Missing ANTHROPIC_API_KEY in {env_path}")
         clients["claude"] = Anthropic(api_key=api_key)
     else:
         raise Exception(f"Invalid sentence_generation model in config: {active_ai}.")
@@ -56,7 +62,6 @@ def initialize_clients(config):
 ################################
 
 def get_data_from_file(file_path, status_callback=print):
-    """Reads txt data directly from the specific file generated in Phase 1."""
     status_callback(f"Reading txt data from file: {file_path}")
     results = []
 
@@ -72,9 +77,7 @@ def get_data_from_file(file_path, status_callback=print):
 
     return results
 
-
 def gen_unique_filename(base_name="audio", extension=".mp3"):
-    """Generates a unique filename using a timestamp."""
     timestamp = int(time.time() * 1000)
     return f"{base_name}_{timestamp}{extension}"
 
@@ -83,7 +86,6 @@ def gen_unique_filename(base_name="audio", extension=".mp3"):
 ################################
 
 def process_vocabulary(csv_path):
-    """Reads the vocabulary CSV and separates global words from target words."""
     global_words_string = ""
     vocab_to_process = []
 
@@ -94,11 +96,9 @@ def process_vocabulary(csv_path):
                 word = row.get("word", "").strip()
                 if not word:
                     continue
-
                 if word.upper() == "!GLOBAL":
                     global_words_string = row.get("bonus_words", "").strip()
                     continue
-
                 vocab_to_process.append(row)
     except FileNotFoundError:
         raise Exception(f"CSV file '{csv_path}' not found.")
@@ -106,7 +106,6 @@ def process_vocabulary(csv_path):
     return vocab_to_process, global_words_string
 
 def build_prompts(vocab_to_process, global_words_string, config, status_callback=print):
-    """Generates the final prompt strings for each vocabulary word."""
     final_prompts = {}
     global_text = ""
     
@@ -116,7 +115,6 @@ def build_prompts(vocab_to_process, global_words_string, config, status_callback
     for row in vocab_to_process:
         word = row.get("word", "").strip()
         
-        # 1. Safely extract target count
         raw_count = row.get("count", "").strip()
         try:
             target_count = int(raw_count) if raw_count else config["defaults"]["number_of_sentences"]
@@ -125,7 +123,6 @@ def build_prompts(vocab_to_process, global_words_string, config, status_callback
             
         status_callback(f"--> INFO: Requesting exactly {target_count} sentence(s) for '{word}'.")
 
-        # 2. Safely extract bonus words
         local_text = ""
         bonus_words = row.get("bonus_words", "").strip()
         if bonus_words:
@@ -136,8 +133,6 @@ def build_prompts(vocab_to_process, global_words_string, config, status_callback
                 local_text = config["prompts"]["bonus_words_some"].format(extra_words=bonus_words)
 
         combined_optional_instructions = f"{global_text}\n{local_text}".strip()
-        
-        # 3. Setting override
         row_setting = row.get("setting", "").strip()
         final_setting = row_setting if row_setting else config["defaults"]["setting"]
 
@@ -151,24 +146,18 @@ def build_prompts(vocab_to_process, global_words_string, config, status_callback
             optional_instruction=combined_optional_instructions,
         )
         
-        # 4. Critical injection to force sentence limit
         final_prompt += f"\n\nCRITICAL SYSTEM OVERRIDE: You MUST output EXACTLY {target_count} sentence pair(s). Do NOT output more. Do NOT output less."
-
         final_prompts[word] = final_prompt
 
     return final_prompts
 
 def fetch_ai_completion(clients, active_ai, config, system_prompt, user_prompt, status_callback, max_retries=3):
-    """Routes the prompt to the chosen AI provider."""
     for attempt in range(max_retries):
         try:
             if active_ai == "openai":
                 model_id = config["openai"]["sentence_generation"]["model_id"]
-                max_tokens = config["openai"]["sentence_generation"]["max_tokens"]
-                
                 response = clients["openai"].chat.completions.create(
                     model=model_id,
-                    max_tokens=max_tokens,
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -178,8 +167,7 @@ def fetch_ai_completion(clients, active_ai, config, system_prompt, user_prompt, 
 
             elif active_ai == "claude":
                 model_id = config["claude"]["model_id"]
-                max_tokens = config["claude"]["max_tokens"]
-                
+                max_tokens = config.get("claude", {}).get("max_tokens", 1000)
                 response = clients["claude"].messages.create(
                     model=model_id,
                     max_tokens=max_tokens,
@@ -204,18 +192,14 @@ def fetch_ai_completion(clients, active_ai, config, system_prompt, user_prompt, 
 ################################
 
 def generate_audio_edge(text, filename, edge_tts_voices):
-    """Generates free TTS using Microsoft Edge's neural voices."""
     voice = random.choice(edge_tts_voices)
-    
     async def _generate():
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(filename)
-        
     asyncio.run(_generate())
     return voice
 
 def generate_audio_gpt4o(client, text, filename, config):
-    """Generates audio using OpenAI's TTS."""
     model_id = config["openai"]["audio"]["model_id"]
     voice = random.choice(config["openai"]["audio"]["voices"])
     audio_instructions = config["prompts"]["audio_instructions"]
@@ -233,62 +217,76 @@ def generate_audio_gpt4o(client, text, filename, config):
     audio_data_b64 = response.choices[0].message.audio.data
     with open(filename, "wb") as f:
         f.write(base64.b64decode(audio_data_b64))
-        
     return voice
 
 ################################
 # MAIN PIPELINE                #
 ################################
 
-def run_pipeline(csv_path, output_dir="outputs", output_name="AI_Generated_Sentences", target_deck_name=None, status_callback=print, progress_callback=None):
-    """Main orchestration function. Can be called by GUI or CLI."""
+def run_pipeline(input_path, output_dir="outputs", output_name="AI_Generated_Sentences", target_deck_name=None, run_audio_only=False, status_callback=print, progress_callback=None):
     try:
         # --- PHASE 0: SETUP ---
         status_callback("Loading configuration...")
         config = load_config()
-        clients, active_ai = initialize_clients(config)
-        system_prompt = config["prompts"]["system_prompt"]
         
+        # Only initialize text generation clients if we are NOT in audio-only mode
+        if not run_audio_only:
+            clients, active_ai = initialize_clients(config)
+            system_prompt = config["prompts"]["system_prompt"]
+        else:
+            # We still need clients for audio if using OpenAI TTS, but we will init it below.
+            clients = {}
+            active_ai = "none"
+            
         audio_folder = os.path.join(output_dir, "audio")
         os.makedirs(audio_folder, exist_ok=True)
-
-        # --- PHASE 1: SENTENCE GENERATION ---
-        status_callback(f"Reading vocabulary from: {csv_path}")
-        vocab_to_process, global_words_string = process_vocabulary(csv_path)
-        final_prompts = build_prompts(vocab_to_process, global_words_string, config, status_callback)
-        
-        total_steps = (len(final_prompts) * 2) + 1
         current_step = 0
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_filename = os.path.join(output_dir, f"{active_ai}_output_{timestamp}.txt")
+        # --- PHASE 1: SENTENCE GENERATION (Or Bypass) ---
+        if not run_audio_only:
+            status_callback(f"Reading vocabulary from: {input_path}")
+            vocab_to_process, global_words_string = process_vocabulary(input_path)
+            final_prompts = build_prompts(vocab_to_process, global_words_string, config, status_callback)
+            
+            total_steps = (len(final_prompts) * 2) + 1
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_filename = os.path.join(output_dir, f"{active_ai}_output_{timestamp}.txt")
 
-        with open(output_filename, "a", encoding="utf-8") as output_file:
-            for i, (word, prompt) in enumerate(final_prompts.items()):
-                status_callback(f"Generating sentences for '{word}' ({i+1}/{len(final_prompts)})...")
-                
-                result_text = fetch_ai_completion(
-                    clients, active_ai, config, system_prompt, prompt, status_callback
-                )
-
-                if result_text:
-                    output_file.write(result_text + "\n")
-                
-                current_step += 1
-                if progress_callback: progress_callback(current_step / total_steps)
-                time.sleep(1) 
+            with open(output_filename, "a", encoding="utf-8") as output_file:
+                for i, (word, prompt) in enumerate(final_prompts.items()):
+                    status_callback(f"Generating sentences for '{word}' ({i+1}/{len(final_prompts)})...")
+                    result_text = fetch_ai_completion(clients, active_ai, config, system_prompt, prompt, status_callback)
+                    if result_text:
+                        output_file.write(result_text + "\n")
+                    
+                    current_step += 1
+                    if progress_callback: progress_callback(current_step / total_steps)
+                    time.sleep(1) 
+        else:
+            status_callback(f"Skipping Sentence Generation. Using provided text file...")
+            output_filename = input_path # The input file IS the text file
 
         # --- PHASE 2: AUDIO GENERATION ---
-        status_callback("Fetching generated sentences for audio creation...")
+        status_callback("Fetching sentences for audio creation...")
         results = get_data_from_file(output_filename, status_callback)
         
+        if run_audio_only:
+            total_steps = len(results) + 1 # Calculate progress bar for audio-only mode
+            
         audio_model = config["model"]["audio"]
         target_language = config["defaults"]["target_language"]
         look_up_list = []
 
         if audio_model == "openai" and "openai" not in clients:
+            if getattr(sys, 'frozen', False):
+                base_dir = os.path.dirname(sys.executable)
+            else:
+                base_dir = os.getcwd()
+            env_path = os.path.join(base_dir, ".env")
+            load_dotenv(dotenv_path=env_path, override=True)
+            
             api_key = os.getenv("OPENAI_API_KEY")
-            if not api_key: raise Exception("Missing OPENAI_API_KEY for Audio Generation.")
+            if not api_key: raise Exception(f"Missing OPENAI_API_KEY in {env_path} for Audio Generation.")
             clients["openai"] = OpenAI(api_key=api_key)
 
         status_callback(f"Generating audio using '{audio_model}'...")
@@ -319,7 +317,6 @@ def run_pipeline(csv_path, output_dir="outputs", output_name="AI_Generated_Sente
         # --- PHASE 3: ANKI DECK CREATION ---
         status_callback("Packaging Anki Deck...")
         model_id = config["anki"]["model_id"]
-        
         final_deck_name = target_deck_name if target_deck_name else config["anki"]["deck_name"]
 
         my_model = genanki.Model(
@@ -340,14 +337,12 @@ def run_pipeline(csv_path, output_dir="outputs", output_name="AI_Generated_Sente
         for item in look_up_list:
             front_text, back_text, audio_path, _ = item
             audio_filename = os.path.basename(audio_path)
-
             my_note = genanki.Note(
                 model=my_model,
                 fields=[front_text, back_text, f"[sound:{audio_filename}]"],
                 guid=genanki.guid_for(front_text),
             )
             my_deck.add_note(my_note)
-
             if os.path.exists(audio_path):
                 media_files_to_export.append(audio_path)
             else:
