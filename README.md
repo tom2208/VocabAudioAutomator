@@ -11,6 +11,7 @@ Whether you want to fully automate sentence generation using AI or manually writ
   - [🛠️ How to Use (GUI \& CLI)](#️-how-to-use-gui--cli)
     - [Option A: The Desktop GUI (Recommended)](#option-a-the-desktop-gui-recommended)
     - [Option B: The Command Line Interface (CLI)](#option-b-the-command-line-interface-cli)
+  - [📦 Building the Standalone App (.exe)](#-building-the-standalone-app-exe)
   - [📝 Preparing Your Vocabulary (The CSV)](#-preparing-your-vocabulary-the-csv)
     - [The Columns](#the-columns)
     - [The `!GLOBAL` Command](#the-global-command)
@@ -86,6 +87,30 @@ poetry run anki-cli vocab.csv -o "my_output_folder" -n "My_Spanish_Cards" -d "Es
 * `-o`, `--output` (Optional): Target directory for generated files (default: 'outputs').
 * `-n`, `--name` (Optional): Name of the final `.apkg` file.
 * `-d`, `--deck` (Optional): Exact Name of the Target Anki Deck (overrides the `config.yaml`).
+
+## 📦 Building the Standalone App (.exe)
+
+If you want to share this tool with friends who don't have Python installed, or if you just want a convenient double-click application for yourself, you can easily compile the script into a standalone `.exe` using the included `auto-py-to-exe` package.
+
+1. **Run the Converter:**
+   In your terminal, run:
+   ```bash
+   poetry run auto-py-to-exe
+   ```
+
+2. **Configure the Build:**
+   A new window/app will open. Configure it exactly like this:
+   * **Script Location:** Browse and select the included `start.py` file from the main folder.
+   * **Onefile:** Select **One Directory** (This is much faster and more reliable than a single huge file).
+   * **Console Window:** Select **Window Based (hide the console)**.
+   * **Advanced:** Scroll down to the `--collect-all` field, click the `+` icon and type `customtkinter`.
+
+3. **Convert & Finalize:**
+   * Click the big blue **Convert .py to .exe** button. 
+   * Once finished, open the output folder. 
+   * **Crucial Step:** Copy your `config.yaml`, a blank `.env` file (remove your API keys before sharing!), and a sample `vocab.csv` into this new output folder, right next to the `.exe`. 
+   
+You can now zip this folder and share it! Anyone can just double-click the `.exe` to run the GUI.
 
 ## 📝 Preparing Your Vocabulary (The CSV)
 Before running the AI pipeline, you need to tell it what words to generate sentences for. This is done using a `.csv` file. 
