@@ -7,7 +7,8 @@ from tkinter import filedialog
 from dotenv import load_dotenv, set_key
 
 from vocab_audio_automator.core.core import run_pipeline
-from vocab_audio_automator.utils.strings import GUIStrings
+from vocab_audio_automator.utils.constants import GUIStrings
+from vocab_audio_automator.ui.tabs.generator_tab import GeneratorTab
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
@@ -41,7 +42,8 @@ class AnkiGeneratorApp(ctk.CTk):
         self.tab_set = self.tabview.add(GUIStrings.SETTINGS_TAB_NAME)
         self.tab_adv = self.tabview.add(GUIStrings.ADVANDCED_TAB_NAME)
 
-        self.setup_generator_tab()
+        self.gen_tab = GeneratorTab(parent=self.tabview.tab("Generator"), app_controller=self)
+        self.gen_tab.pack(fill="both", expand=True)
         self.setup_settings_tab()
         self.setup_advanced_tab()
         self.load_current_settings()

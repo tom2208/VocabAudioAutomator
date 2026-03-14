@@ -1,3 +1,7 @@
+class WindowConfig:
+    pass
+
+
 class GUIStrings:
 
     VERSION = "v1.0.0"

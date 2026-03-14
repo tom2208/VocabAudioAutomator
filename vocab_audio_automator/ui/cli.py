@@ -1,6 +1,6 @@
 import argparse
 from vocab_audio_automator.core.core import run_pipeline
-from vocab_audio_automator.utils.strings import CLIStrings
+from vocab_audio_automator.utils.constants import CLIStrings
 
 
 def main():
