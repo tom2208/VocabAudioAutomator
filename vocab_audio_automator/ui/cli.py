@@ -1,41 +1,40 @@
 import argparse
 from vocab_audio_automator.core.core import run_pipeline
+from vocab_audio_automator.utils.strings import CLIStrings
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Generates Anki Cards with Audio via LLMs."
-    )
-    parser.add_argument("input_file", help="Path to the vocabulary CSV or text file")
+    parser = argparse.ArgumentParser(description=CLIStrings.MAIN_DESCRIPTION)
+    parser.add_argument("input_file", help=CLIStrings.ARG_INPUT_FILE_HELP)
     parser.add_argument(
         "-o",
         "--output",
         default="outputs",
-        help="Target directory for generated files (default: 'outputs')",
+        help=CLIStrings.ARG_OUTPUT_FILE_HELP,
     )
     parser.add_argument(
         "-n",
         "--name",
         default="AI_Generated_Sentences",
-        help="Name of the final .apkg file",
+        help=CLIStrings.ARG_NAME_HELP,
     )
     parser.add_argument(
         "-d",
         "--deck",
         default=None,
-        help="Exact Name of the Target Anki Deck (Overrides config)",
+        help=CLIStrings.ARG_DECK_HELP,
     )
 
     parser.add_argument(
         "-a",
         "--audio-only",
         action="store_true",
-        help="Skip text generation, read input_file as target|source text",
+        help=CLIStrings.ARG_AUDIO_ONLY_HELP,
     )
 
     args = parser.parse_args()
 
-    print(f"--- Starting Anki Generator CLI ---")
+    print(CLIStrings.START_INFO)
     run_pipeline(
         args.input_file,
         output_dir=args.output,

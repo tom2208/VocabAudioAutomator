@@ -129,3 +129,13 @@ class GUIStrings:
     ## save settings
     BUTTON_SAVE_ADVANCED = "Save Advanced Settings"
     LABEL_ERROR_ANKI_MODEL_ID = "Error: Model ID must be a number!"
+
+
+class CLIStrings:
+    MAIN_DESCRIPTION = "Generates Anki Cards with Audio via LLMs."
+    ARG_INPUT_FILE_HELP = "Path to the vocabulary CSV or text file"
+    ARG_OUTPUT_FILE_HELP = "Target directory for generated files (default: 'outputs')"
+    ARG_NAME_HELP = "Name of the final .apkg file"
+    ARG_DECK_HELP = "Exact Name of the Target Anki Deck (Overrides config)"
+    ARG_AUDIO_ONLY_HELP = "Skip text generation, read input_file as target|source text"
+    START_INFO = "--- Starting Anki Generator CLI ---"
